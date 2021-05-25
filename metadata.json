@@ -1,0 +1,6 @@
+{
+  "name": "virtual_keyboard",
+  "identifier": "virtual_keyboard",
+  "version": "1.0.0",
+  "icon": "./static/icon.png"
+}
