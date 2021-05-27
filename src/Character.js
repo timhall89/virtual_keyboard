@@ -7,7 +7,6 @@ export default class Character extends Lightning.Component {
       y: 0,
       alpha: 0,
       w: 70,
-      textAlign: 'center',
       text: { text: '', fontFace: 'Regular', fontSize: 40, textColor: 0xbb7094db },
     }
   }

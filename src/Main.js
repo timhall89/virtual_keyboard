@@ -67,7 +67,9 @@ export default class Main extends Lightning.Component {
   }
 
   _handleEnter() {
-    this._addChar(this.tag('CharacterList').activeValue)
+    if ((this._value || '').length < MAX_TEXT_BOX_LENGTH) {
+      this._addChar(this.tag('CharacterList').activeValue)
+    }
   }
 
   _handleBack() {
