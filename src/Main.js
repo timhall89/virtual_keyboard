@@ -1,6 +1,8 @@
 import { Lightning } from '@lightningjs/sdk'
 import CharacterList from './CharacterList'
 import TextBox from './TextBox'
+import SubmitButton from './SubmitButton'
+import TextInput from './TextInput'
 import {
   MAX_TEXT_BOX_LENGTH,
   TEXT_BOX_WIDTH,
@@ -12,7 +14,7 @@ import {
 export default class Main extends Lightning.Component {
   static _template() {
     return {
-      Wrapper: {
+      EnterYouName: {
         rect: true,
         x: 960,
         y: 540,
@@ -20,72 +22,62 @@ export default class Main extends Lightning.Component {
         w: TEXT_BOX_WIDTH,
         h: CHAR_LIST_HEIGHT,
         color: 0xffebf0fa,
-        TextBox: {
-          type: TextBox,
-          value: '',
-          y: CHAR_LIST_HEIGHT / 2,
-          mountY: 0.5,
-          MaxReachedWarning: {
-            y: 60,
-            alpha: 0,
-            text: {
-              text: `Maximum of ${MAX_TEXT_BOX_LENGTH} characters allowed`,
-              textColor: 0xbbffa31a,
-              fontSize: 30,
-            },
+        TextInput: {
+          type: TextInput,
+          signals: { submitted: true },
+        },
+        Title: {
+          text: {
+            text: 'Enter your name',
+            fontFace: 'Regular',
+            fontSize: 40,
+            textColor: 0xbb7094db,
           },
         },
-        CharacterList: {
-          x: TEXT_BOX_PADDING,
-          type: CharacterList,
+      },
+      SubmittedMessage: {
+        alpha: 0,
+        rect: true,
+        x: 960,
+        y: 540,
+        mount: 0.5,
+        w: TEXT_BOX_WIDTH,
+        color: 0xffebf0fa,
+        h: 60,
+        Message: {
+          y: 30,
+          mountY: 0.5,
+          text: {
+            text: '',
+            fontFace: 'Regular',
+            fontSize: 40,
+            textColor: 0xbb7094db,
+          },
         },
       },
     }
   }
 
-  _setValue(v) {
-    this.tag('TextBox').value = v
-    this.tag('CharacterList').setSmooth('x', (v || '').length * CHAR_WIDTH + TEXT_BOX_PADDING)
-    this._value = v
-    if (v.length >= MAX_TEXT_BOX_LENGTH) {
-      this._setState('MaxCharactersReached')
-    } else {
-      this._setState('')
-    }
-  }
-
-  _addChar(c) {
-    this._setValue((this._value || '') + c)
-  }
-
-  _removeLastChar() {
-    this._setValue((this._value || '').slice(0, -1))
-  }
-
-  _getFocused() {
-    return this.tag('CharacterList')
-  }
-
-  _handleEnter() {
-    if ((this._value || '').length < MAX_TEXT_BOX_LENGTH) {
-      this._addChar(this.tag('CharacterList').activeValue)
-    }
-  }
-
-  _handleBack() {
-    this._removeLastChar()
+  _setup() {
+    this._setState('Pending')
   }
 
   static _states() {
     return [
-      class MaxCharactersReached extends this {
-        $enter() {
-          this.tag('TextBox.MaxReachedWarning').setSmooth('alpha', 1)
-          this.tag('CharacterList').setSmooth('alpha', 0)
+      class Pending extends this {
+        _getFocused() {
+          return this.tag('TextInput')
         }
-        $exit() {
-          this.tag('TextBox.MaxReachedWarning').setSmooth('alpha', 0)
-          this.tag('CharacterList').setSmooth('alpha', 1)
+
+        submitted(v) {
+          this._setState('Submitted', v)
+        }
+      },
+      class Submitted extends this {
+        $enter(v, ...rest) {
+          this.tag('EnterYouName').setSmooth('alpha', 0)
+          this.tag('Message').text.text = 'Hello ' + rest.join('')
+          this.tag('SubmittedMessage').setSmooth('alpha', 1)
         }
       },
     ]
