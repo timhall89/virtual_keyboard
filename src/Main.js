@@ -75,7 +75,7 @@ export default class Main extends Lightning.Component {
       },
       class Submitted extends this {
         $enter(v, ...rest) {
-          this.tag('EnterYouName').setSmooth('alpha', 0)
+          this.tag('EnterYouName').alpha = 0
           this.tag('Message').text.text = 'Hello ' + rest.join('')
           this.tag('SubmittedMessage').setSmooth('alpha', 1)
         }
